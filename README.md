@@ -8,3 +8,20 @@ If you work with specific organisms, semi-curated databases such as "ZOVER" (htt
 Here I 'll filter my eukaryote viruses sequences from "nt_viruses" and , for a matter os aligment speed and computational resources use, I will remove reduncies with MMseqs2 (https://github.com/soedinglab/MMseqs2).
 
 
+1- Download and decompress indexed "nt_viruses"
+
+    #Download
+    rsync -avP rsync://ftp.ncbi.nlm.nih.gov/blast/db/nt_viruses*
+
+    #Check the md5 sum files before continuing (example here: https://github.com/nylander/Check_MD5SUMS)
+    #Decompress it using your preferred program
+    for i in *.tar.gz; do pigz -dc -p 70 ${i} | tar -xvf - && rm -f ${i}; echo "${i} is done!"; done 
+
+2- For our phage filter lets extract  accession + taxid  with blastdbcmd (you can get it here: https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/
+
+    blastdbcmd -db nt_viruses -entry all -outfmt "%a\t%T" > nt_viruses.acc_taxid.tsv
+
+
+
+
+
