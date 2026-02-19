@@ -21,6 +21,41 @@ Here I 'll filter my eukaryote viruses sequences from "nt_viruses" and , for a m
 
     blastdbcmd -db nt_viruses -entry all -outfmt "%a\t%T" > nt_viruses.acc_taxid.tsv
 
+    #fixing the file in case it came separated by the string "\t" and not real TAB
+    awk '{gsub(/\\t/, "\t"); print}' nt_viruses.acc_taxid.tsv > nt_viruses.acc_taxid.real.tsv
+
+    #Download the taxonkit from here: https://github.com/shenwei356/taxonkit/releases/latest/download/taxonkit_linux_amd64.tar.gz
+
+    #BUild a list of phages IDs
+    taxonkit list --data-dir taxdump --ids 10744,2842243,10860,2840022,2731619,2842242,12333 > phage_taxids.txt
+
+    # Build the list of accessions to KEEP (non-phage)
+    awk '
+    FNR==NR {bad[$1]=1; next}
+    !bad[$2] {print $1}
+    ' phage_taxids.txt nt_viruses.acc_taxid.tsv > nonphage.acc.txt
+
+    # Extract the filtered FASTA directly from the BLAST DB
+    blastdbcmd -db nt_viruses \
+    -entry_batch nonphage.acc.txt \
+    -out nt_viruses_no_phage.fna
+
+The output of this filter was:
+
+    Initial: 14,481,233
+    Removed: 123,568 (~0.85%)
+    Kept: 14,357,665
+Well, I was expecting a more effective removal, lets proceed.
+
+Do obvious “phage” strings still appear in headers?
+
+
+
+     
+
+    
+
+
 
 
 
